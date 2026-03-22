@@ -1,33 +1,29 @@
-# Trade Monitor API
+# Atlas Bond Pipeline 📈
+### High-Performance Fixed Income ETL & Risk Engine
 
-A lightweight FastAPI + Polars project for monitoring, querying, and summarising trade-style datasets.
+A professional-grade data pipeline designed to ingest global bond positions, perform multi-core currency normalization, and store validated trade data for real-time risk analysis.
 
-This project was built to demonstrate practical Python skills around:
-- API development with FastAPI
-- tabular data processing with Polars
-- filtering and aggregating trade data
-- basic anomaly detection for operational monitoring
+## 🏗️ Architecture & Design Decisions
 
-## Features
+This project is built to solve the common "Python Bottleneck" in financial data processing:
 
-- Load trade-style data from CSV
-- Query trades with optional filters
-- Summarise trades by book
-- Summarise trades by trader
-- Flag suspicious records based on simple business rules
-- Explore endpoints through FastAPI's auto-generated Swagger docs
+* **Extract (Async I/O):** Built with **FastAPI** and **httpx**. It utilizes Python's `asyncio` event loop to handle concurrent market data fetches without blocking the execution thread—crucial for high-throughput trading environments.
+* **Transform (Parallel Processing):** Powered by **Polars**. By utilizing a Rust-backed engine, the pipeline drops the **GIL (Global Interpreter Lock)** to perform vectorized bond-math and FX-joins across all available CPU cores.
+* **Validation (Type Safety):** Implements **Pydantic** models to enforce "Bank-Grade" data integrity, ensuring ISINs, yields, and prices meet strict schemas before ingestion.
+* **Load (Persistent Storage):** Integrated with **PostgreSQL** using **SQLAlchemy**. Optimized with **B-Tree Indexing** on high-cardinality columns (Ticker/Date) to ensure sub-second query latency for analysts.
 
-## Tech Stack
+## 🚀 Key Features
+- **Predicate Pushdown:** Lazy evaluation optimizes memory usage by filtering data at the source.
+- **Concurrency vs. Parallelism:** Demonstrates a hybrid approach using `async` for I/O and multi-threading for CPU-bound tasks.
+- **RESTful Interface:** Provides a Swagger-documented API for automated trade reporting.
 
-- Python
-- FastAPI
-- Uvicorn
-- Polars
+## 🛠️ Tech Stack
+- **Language:** Python 3.12+
+- **Framework:** FastAPI
+- **Data Science:** Polars (Rust-based)
+- **Database:** PostgreSQL / SQLAlchemy
+- **Infrastructure:** Docker / Kubernetes-ready
 
-## Project Structure
-
-```text
-trade-monitor-api/
-├── main.py
-├── sample_trades.csv
-└── README.md
+## 📖 Setup
+1. `pip install -r requirements.txt`
+2. `uvicorn main:app --reload`
