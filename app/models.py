@@ -1,7 +1,8 @@
 from pydantic import BaseModel, Field, validator
-from datatime import datetime
+from datetime import datetime
 from typing import Optional
 
+# Model for a bondposition (struct)
 class Bondposition(BaseModel):
     isin: str = Field(..., min_length=12, max_length=12)
     ticker: str
@@ -16,6 +17,7 @@ class Bondposition(BaseModel):
     def currency_must_be_uppercase(cls,v):
         return v.upper()
 
+# Model for the market data (fx rates struct)
 class MarketState(BaseModel):
     currency: str
     fx_rate_to_usd: float
