@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import datetime
@@ -32,7 +33,7 @@ class BondTable(Base):
     market_value = Column(Float)
     valuation_timestamp = Column(DateTime)
 
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, server_default=func.now())
 
 # the "Builder" Function essnetially builds the db in psql
 def init_db():
