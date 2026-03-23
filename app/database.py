@@ -29,6 +29,9 @@ class BondTable(Base):
     currency = Column(String)
     face_value = Column(Float)
     clean_price = Column(Float)
+    market_value = Column(Float)
+    valuation_timestamp = Column(DateTime)
+
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 # the "Builder" Function essnetially builds the db in psql
