@@ -1,34 +1,30 @@
 import polars as pl
 from datetime import datetime
 
-def run_valuation_pipeline(file_path: str) -> pl.DataFrame:
+def run_valuation_pipeline(df: pl.DataFrame) -> pl.DataFrame:
     """
     The High-Frequency Engine.
-    Uses pure Polars LazyFrames for Predicate Pushdown (Filtering) 
-    and high-speed vectorized math.
+    Processes live data from RAM using Polars Lazy mode.
     """
-    print("🚀 Spinning up pure Polars engine...")
+    print("🚀 Spinning up pure Polars engine on live data...")
     
-    # 1. Scan the CSV (Lazy Mode - doesn't load into RAM yet)
-    lf = pl.scan_csv(file_path)
+    # This creates a "Plan" instead of doing the math immediately using lazy framing aka a pre made plan of action
+    lf = df.lazy()
 
-    # 2. The Polars Bouncer (Predicate Filtering)
-    # We drop bad rows instantly using C++ vectorisation
+    # 2. The Polars Bouncer (Filtering)
+    # This drops invalid data instantly using C++ speed
     lf = lf.filter(
         (pl.col("clean_price") > 0) & 
-        (pl.col("face_value") > 0) & 
-        (pl.col("isin").str.len_chars() == 12)
+        (pl.col("face_value") > 0)
     )
 
-    # 3. The Math Engine
+    # 3. Vectorised Math
+    # We calculate Market Value for all 50 bonds at once.
     lf = lf.with_columns([
         (pl.col("face_value") * (pl.col("clean_price") / 100.0)).alias("market_value"),
         pl.lit(datetime.now()).alias("valuation_timestamp")
     ])
 
-    # 4. Show the blueprint of what Polars is about to do
-    print("--- Optimised query plan ---")
-    print(lf.explain())
-
-    # 5. Execute the plan and return the clean, calculated DataFrame
+    # 4. The Execution
+    # 'collect()' is the "Go" button that runs the optimized plan.
     return lf.collect()
